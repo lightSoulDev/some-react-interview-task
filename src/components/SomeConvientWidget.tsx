@@ -1,4 +1,5 @@
-import React, {useEffect, useMemo, useState} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import styled from 'styled-components';
 import Logger from '../extras/Logger';
@@ -19,7 +20,7 @@ function SomeConvientWidget(): JSX.Element {
   const l = useLocale();
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string>('');
-  const [data, setData] = useState();
+  const [data, setData] = useState<string>();
 
   const messageInterval: number = useSelector((state: RootState) => state.settings.messageInterval);
   const dataDelay: number = useSelector((state: RootState) => state.settings.dataDelay);
@@ -50,10 +51,10 @@ function SomeConvientWidget(): JSX.Element {
   const loadData = async (): Promise<void> => {
     const api = MockApi.getInstance();
     Logger.log(SomeConvientWidget, 'Loading widget data...');
-    let response: any;
+    let response: string | unknown;
 
     try {
-      response = await api.withTimeout(
+      response = await api.withTimeout<string>(
         api.getData(dataDelay),
         messageInterval * messageCycle.length,
       );
@@ -63,7 +64,7 @@ function SomeConvientWidget(): JSX.Element {
         clearInterval(timer);
         setLoading(false);
         setMessage(successLocale);
-        setData(response);
+        setData(String(response));
       } else {
         throw new Error('Loading failed');
       }
