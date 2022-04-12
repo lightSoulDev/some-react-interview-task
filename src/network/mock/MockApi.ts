@@ -68,7 +68,7 @@ export class MockApi extends HttpClient {
       'Loading.Second': 'Widget is still loading',
       'Loading.Third': 'Loading takes longer than usual. Please wait',
       'Error.Timeout': 'Error while loading widget. Please refresh the page',
-      'Success.LoadingFinished': 'Widget has been loaded!',
+      'Success.LoadingFinished': 'Widget loaded!',
       'Extra.Toggle': 'Toggle',
       'Extra.ToggleMessage': 'Press <Toggle> to start.',
       'Extra.DataDelay': 'Set data delay:',
