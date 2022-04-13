@@ -20,7 +20,7 @@ export interface SuspenseProps {
   resource: MockDataWrap | null;
 }
 
-function SomeConvientWidget(props: SuspenseProps): JSX.Element {
+function SomeConvenientWidget(props: SuspenseProps): JSX.Element {
   const mockData = props.resource?.mockData.read();
   const l = useLocale();
 
@@ -32,4 +32,4 @@ function SomeConvientWidget(props: SuspenseProps): JSX.Element {
   );
 }
 
-export default SomeConvientWidget;
+export default SomeConvenientWidget;

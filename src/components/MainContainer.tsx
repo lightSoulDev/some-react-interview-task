@@ -4,7 +4,7 @@ import {useSettingsContext} from '../context/settings';
 import useLocale from '../locale/useLocale.hook';
 import {fetchMockData, MockDataWrap} from '../suspense/suspense';
 import Header from './Header';
-import SomeConvientWidget from './SomeConvientWidget';
+import SomeConvenientWidget from './SomeConvenientWidget';
 import StepLoader from '../suspense/StepLoader';
 
 const Button = styled.button`
@@ -31,7 +31,7 @@ function MainContainer(): JSX.Element {
       <Header />
       {toggleState ? (
         <Suspense fallback={<StepLoader />}>
-          <SomeConvientWidget resource={resource} />
+          <SomeConvenientWidget resource={resource} />
         </Suspense>
       ) : (
         <div>
