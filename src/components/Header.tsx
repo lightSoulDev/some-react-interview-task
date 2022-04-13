@@ -1,9 +1,8 @@
 import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components';
+import {DEFAULT_SETTINGS, useSettingsContext} from '../context/settings';
+import LocaleManager from '../locale/LocaleManager';
 import useLocale from '../locale/useLocale.hook';
-import {setDataDelay, setMessageInterval, swapLocale} from '../redux/settingsSlice';
-import {RootState} from '../redux/store';
 
 const Container = styled.div`
   height: 50px;
@@ -33,37 +32,53 @@ const Input = styled.input`
 `;
 
 function Header(): JSX.Element {
-  const locale = useSelector((state: RootState) => state.settings.locale);
-  const messageInterval: number = useSelector((state: RootState) => state.settings.messageInterval);
-  const dataDelay: number = useSelector((state: RootState) => state.settings.dataDelay);
+  const {settings, setSettings} = useSettingsContext();
   const l = useLocale();
-  const dispatch = useDispatch();
 
   return (
     <Container>
       <span>{l('Extra.DataDelay')}</span>
       <Input
-        defaultValue={String(dataDelay)}
+        defaultValue={settings.dataDelay ?? DEFAULT_SETTINGS.dataDelay}
         onChange={event => {
           const value: string = event?.target?.value;
-          if (value && !isNaN(+value)) dispatch(setDataDelay(value));
+          if (value && !isNaN(+value)) {
+            setSettings({...settings, dataDelay: +value});
+          }
         }}
       />
 
       <span>{l('Extra.MessageInterval')}</span>
       <Input
-        defaultValue={String(messageInterval)}
+        defaultValue={settings.cycleInterval ?? DEFAULT_SETTINGS.cycleInterval}
         onChange={event => {
           const value: string = event?.target?.value;
-          if (value && !isNaN(+value)) dispatch(setMessageInterval(value));
+          if (value && !isNaN(+value)) {
+            setSettings({...settings, cycleInterval: +value});
+          }
+        }}
+      />
+
+      <span>{l('Extra.Timeout')}</span>
+      <Input
+        defaultValue={settings.timeout ?? DEFAULT_SETTINGS.timeout}
+        onChange={event => {
+          const value: string = event?.target?.value;
+          if (value && !isNaN(+value)) {
+            setSettings({...settings, timeout: +value});
+          }
         }}
       />
 
       <Button
         onClick={() => {
-          dispatch(swapLocale(locale));
+          const locales = LocaleManager.getExternalLocalesList();
+          const current = locales.indexOf(settings.locale);
+          let newLocale = locales[0];
+          if (current >= 0) newLocale = locales[(current + 1) % locales.length];
+          setSettings({...settings, locale: newLocale});
         }}>
-        {locale}
+        {settings.locale}
       </Button>
     </Container>
   );

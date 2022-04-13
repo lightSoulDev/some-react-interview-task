@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import MainContainer from './components/MainContainer';
-import Spinner from './components/StyledSpinner';
-import Logger from './extras/Logger';
+import LocalStorageContextProvider from './context/localStorage.provider';
 import LocaleManager from './locale/LocaleManager';
-import {MockApi} from './network/mock/MockApi';
+import {MockApi} from './mock/MockApi';
+import Spinner from './suspense/StyledSpinner';
 
 const serverPing = 500;
 
@@ -21,14 +21,14 @@ function App(): JSX.Element {
 
   const getLocales = async (): Promise<void> => {
     const api = MockApi.getInstance();
-    Logger.log(App, 'Loading externalLocaleList...');
+    console.log('Loading externalLocaleList...');
     const externalLocaleList = await api.getLocales(serverPing);
 
     if (externalLocaleList) {
       LocaleManager.setExternalLocales(externalLocaleList);
-      Logger.log(App, 'Loading success:', externalLocaleList);
+      console.log('Loading success:', externalLocaleList);
     } else {
-      Logger.error(App, 'Loading failed, App is using default locales.');
+      console.error('Loading failed, App is using default locales.');
     }
 
     setLoaded(true);
@@ -39,7 +39,7 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <>
+    <LocalStorageContextProvider>
       {loaded ? (
         <MainContainer />
       ) : (
@@ -47,7 +47,7 @@ function App(): JSX.Element {
           <Spinner />
         </Container>
       )}
-    </>
+    </LocalStorageContextProvider>
   );
 }
 

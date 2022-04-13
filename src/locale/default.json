@@ -6,6 +6,7 @@
     "Success.LoadingFinished": "Widget loaded!",
     "Extra.Toggle": "Toggle",
     "Extra.ToggleMessage": "Press <Toggle> to start.",
-    "Extra.DataDelay": "Set data delay:",
-    "Extra.MessageInterval": "Set message interval:"
+    "Extra.DataDelay": "Data delay:",
+    "Extra.MessageInterval": "Message interval:",
+    "Extra.Timeout": "Timeout:"
 }

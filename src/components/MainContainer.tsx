@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {Suspense, useState} from 'react';
 import styled from 'styled-components';
+import {useSettingsContext} from '../context/settings';
+import useLocale from '../locale/useLocale.hook';
+import {fetchMockData, MockDataWrap} from '../suspense/suspense';
 import Header from './Header';
 import SomeConvientWidget from './SomeConvientWidget';
-import Logger from '../extras/Logger';
-import useLocale from '../locale/useLocale.hook';
+import StepLoader from '../suspense/StepLoader';
 
 const Button = styled.button`
   font-size: 1em;
@@ -17,21 +19,26 @@ const Container = styled.div`
   text-align: center;
 `;
 
+let resource: MockDataWrap | null = null;
+
 function MainContainer(): JSX.Element {
   const [toggleState, setToggleState] = useState(false);
   const l = useLocale();
+  const {settings} = useSettingsContext();
 
   return (
     <Container>
       <Header />
       {toggleState ? (
-        <SomeConvientWidget />
+        <Suspense fallback={<StepLoader />}>
+          <SomeConvientWidget resource={resource} />
+        </Suspense>
       ) : (
         <div>
           <Button
             onClick={() => {
               setToggleState(!toggleState);
-              Logger.log(MainContainer, 'Toggled widget');
+              resource = fetchMockData(settings.dataDelay, settings.timeout);
             }}>
             {l('Extra.Toggle')}
           </Button>

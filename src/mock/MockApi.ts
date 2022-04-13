@@ -1,60 +1,45 @@
-import {AxiosResponse} from 'axios';
-import {LocaleList} from '../../locale/locale.types';
-import HttpClient from '../core/HttpClient';
+import {Locales} from '../locale/locale.types';
 
 const DefaultPing = 0;
 
-export class MockApi extends HttpClient {
+export class MockApi {
   private static classInstance?: MockApi;
-
-  private constructor() {
-    super({
-      baseURL: 'http://127.0.0.1:3001',
-      headers: {'Content-type': 'application/json; charset=UTF-8'},
-    });
-  }
 
   public static getInstance(): MockApi {
     if (!this.classInstance) this.classInstance = new MockApi();
     return this.classInstance;
   }
 
-  private representResponse = async <T = never>(
-    mock: T,
-    ping?: number,
-  ): Promise<AxiosResponse<T, unknown>> => {
-    return new Promise(resolve => {
+  private representResponse = async <T = never>(mock: T, ping?: number): Promise<T> => {
+    return new Promise<T>(resolve => {
       setTimeout(() => {
-        resolve(
-          new Promise<T>(_resolve => {
-            _resolve(mock);
-          }),
-        );
+        resolve(mock);
       }, ping ?? DefaultPing);
     });
   };
 
-  private representError = async <T = never>(
-    mock: T,
-    ping?: number,
-  ): Promise<AxiosResponse<T, unknown>> => {
-    return new Promise((_, reject) => {
+  private representError = async <T = never>(mock: T, ping?: number): Promise<T> => {
+    return new Promise<T>((_, reject) => {
       setTimeout(() => {
         reject();
       }, ping ?? DefaultPing);
     });
   };
 
-  public withTimeout = <T = never>(
-    prom: Promise<AxiosResponse<T, unknown>>,
-    time: number,
-  ): T | Promise<T> | unknown =>
-    Promise.race([prom, new Promise((_, reject) => setTimeout(reject, time))]);
+  public withTimeout = <T = never>(prom: Promise<T>, time: number): Promise<T> =>
+    Promise.race<T>([
+      prom,
+      new Promise<T>((_, reject) =>
+        setTimeout(() => {
+          reject('Error.Timeout');
+        }, time),
+      ),
+    ]);
 
-  public getData = (ping?: number): Promise<AxiosResponse<string, unknown>> =>
+  public getData = (ping?: number): Promise<string> =>
     this.representResponse<string>('{ ヽ(⌒‐⌒)ゝ }', ping);
 
-  private mockLocales: LocaleList = {
+  private mockLocales: Locales = {
     ru: {
       'Loading.First': 'Виджет грузится',
       'Loading.Second': 'Виджет ещё грузится',
@@ -64,7 +49,8 @@ export class MockApi extends HttpClient {
       'Extra.Toggle': 'Переключить',
       'Extra.ToggleMessage': 'Нажмите на кнопку <Переключить> для начала',
       'Extra.DataDelay': 'Задержка загрузки данных:',
-      'Extra.MessageInterval': 'Интервал показа сообщений (N / {message count}):',
+      'Extra.MessageInterval': 'Интервал показа сообщений:',
+      'Extra.Timeout': 'Таймаут:',
     },
     en: {
       'Loading.First': 'Widget is loading',
@@ -74,11 +60,12 @@ export class MockApi extends HttpClient {
       'Success.LoadingFinished': 'Widget loaded!',
       'Extra.Toggle': 'Toggle',
       'Extra.ToggleMessage': 'Press <Toggle> to start.',
-      'Extra.DataDelay': 'Set data delay:',
-      'Extra.MessageInterval': 'Set message interval (N / {message count}):',
+      'Extra.DataDelay': 'Data delay:',
+      'Extra.MessageInterval': 'Message interval:',
+      'Extra.Timeout': 'Timeout:',
     },
   };
 
-  public getLocales = (ping?: number): Promise<AxiosResponse<LocaleList, unknown>> =>
-    this.representResponse<LocaleList>(this.mockLocales, ping);
+  public getLocales = (ping?: number): Promise<Locales> =>
+    this.representResponse<Locales>(this.mockLocales, ping);
 }

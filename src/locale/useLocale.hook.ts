@@ -1,14 +1,13 @@
-import {useSelector} from 'react-redux';
-import {RootState} from '../redux/store';
+import {useSettingsContext} from '../context/settings';
 import LocaleManager from './LocaleManager';
 
 type LocaleHook = (key: string) => string;
 
 const useLocale = (): LocaleHook => {
-  const locale = useSelector((state: RootState) => state.settings.locale);
+  const {settings} = useSettingsContext();
 
   return (key: string): string => {
-    return LocaleManager.get(key, locale);
+    return LocaleManager.get(key, settings.locale);
   };
 };
 

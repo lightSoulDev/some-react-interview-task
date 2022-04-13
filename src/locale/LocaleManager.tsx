@@ -1,22 +1,26 @@
 import DefaultLocales from './default.json';
-import {LocaleList} from './locale.types';
+import {LocaleList, Locales} from './locale.types';
 
 export default class LocaleManager {
-  private static default: Record<string, string> = DefaultLocales;
-  private static external: LocaleList;
+  private static readonly DEFAULT_LIST: LocaleList = DefaultLocales;
+  private static readonly DEFAULT_LOCALE: string = 'en';
 
-  public static setExternalLocales(value: LocaleList): void {
+  private static external: Locales;
+
+  public static setExternalLocales(value: Locales): void {
     this.external = value;
   }
 
-  public static get(key: string, locale = 'en'): string {
-    if (this.external && this.external[locale] && this.external[locale][key])
-      return this.external[locale][key];
-    if (this.default[key]) return this.default[key];
-    return key;
+  public static get(key: string, locale = this.DEFAULT_LOCALE): string {
+    if (this.external) {
+      const localeList: LocaleList = this.external[locale] ?? this.external[this.DEFAULT_LOCALE];
+      return localeList[key as keyof LocaleList] ?? key;
+    } else {
+      return this.DEFAULT_LIST[key as keyof LocaleList] ?? key;
+    }
   }
 
   public static getExternalLocalesList(): Array<string> {
-    return this.external ? Object.keys(this.external) : ['en'];
+    return this.external ? Object.keys(this.external) : [this.DEFAULT_LOCALE];
   }
 }
